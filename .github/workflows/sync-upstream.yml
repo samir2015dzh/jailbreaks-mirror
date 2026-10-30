@@ -1,0 +1,22 @@
+name: Sync upstream mirror
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror upstream branches and tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git clone --bare https://github.com/togg53192-cmd/jailbreaks.git upstream.git
+          cd upstream.git
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
